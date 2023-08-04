@@ -34,19 +34,23 @@ The regular game version doesn't use the Internet, but the JSON file with downlo
 However, there is an experimental version of the game using following web API-s to fetch & verify words.
 - https://random-word-api.vercel.app/api?words=1 - word fetching API
 - https://api.dictionaryapi.dev/api/v2/entries/en/word - word verifying API\
+\
 The only special requirement to run the online version is the Internet connection.\
 When do you want to use an online version of a game?
 - When every kilobyte of disk space is valuable,
 - When you have to be sure that everything is alright with the word database (offline JSON can be edited by an accident or by someone else),
 - When you like to betatest things.\
+\
 How to run the online game version?\
 Make sure to meet all the system requirements. Then open your OS's terminal window and change the directory to `online-experimental`, then run the game:
 - Linux: `node game-online.js` or `./linux-game-online`
 - Windows: `node game-online.js`
 - macOS: `node game-online.js`\
+\
 Cheats for the online game version are a little different:
 - More guesses - edit line 21 and 268 and put in as many chances as you want.
 - Disable word verifying - comment out lines 158 and 160-177.\
+\
 
 Screenshot of the online game version below:
 
