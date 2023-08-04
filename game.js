@@ -1,4 +1,5 @@
 // required libraries
+const filesystem = require('node:fs');
 const Writable = require('stream').Writable;
 var mutableStdout = new Writable({
     write: function(chunk, encoding, callback) {
@@ -16,6 +17,7 @@ const input = require('readline').createInterface({
 
 // global variables
 // word to be guessed
+var word_database = [];
 let fetched_word = "";
 // tries
 let tries_left = 15;
@@ -44,42 +46,18 @@ function center_welcome_text() {
 }
 
 // console size check
-function check_console_size() {
+function check_essentials() {
+    if (!filesystem.existsSync('dictionary.json')) {
+        console.log('Game cannot start in offline mode without dictionary file.');
+        console.log('Make sure there is a file "dictionary.json" in the game directory.');
+        process.exit(0);
+    } else {
+        word_database = require('./dictionary.json');
+    }
     if (process.stdout.columns < 88 || process.stdout.rows < 22) {
         console.log('Game cannot start in console window smaller than 88x22 (columns x rows).');
         console.log('Please resize your console window and then run the game again.');
         process.exit(0);
-    }
-}
-
-// connection check
-async function check_internet_connection() {
-    var checks_failed = 0;
-    console.log(`\n\n\x1b[34mChecking Internet connection…\x1b[0m`);
-    process.stdout.write('Server 1: ');
-    try {
-        const response = await fetch('https://random-word-api.vercel.app/api?words=1').then(() => {
-            console.log('\x1b[32mOK\x1b[0m');
-        });
-    } catch (error) {
-        console.log('\x1b[31mFAILED\x1b[0m');
-        checks_failed++;
-    }
-    process.stdout.write('Server 2: ');
-    try {
-        const response = await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/connection').then(() => {
-            console.log('\x1b[32mOK\x1b[0m');
-        });
-    } catch (error) {
-        console.log('\x1b[31mFAILED\x1b[0m');
-        checks_failed++;
-    }
-    if (checks_failed > 0) {
-        console.log('\x1b[31mConnection errors occured. Please check your Internet connection or try again later.\x1b[0m');
-        process.exit(0);
-    } else {
-        console.log('\x1b[32mConnection test passed.\x1b[0m\n');
-        get_word();
     }
 }
 
@@ -97,18 +75,17 @@ function start_game() {
     console.log(`↓               - the word is lower in dictionary`);
     console.log(`↑               - the word is higher in dictionary`);
 
-    console.log(`\nNote that \x1b[31monly the first\x1b[0m matching letters are \x1b[32mgreen\x1b[0m`);
+    console.log(`\nNote that \x1b[31monly the first\x1b[0m matching letters are \x1b[32mgreen\x1b[0m.`);
 
     console.log(`\nExample:          The word is "marching"`);
     console.log(`---`);
     console.log(`\x1b[32mma\x1b[0mtching↑       - only two first letters are green,`);
     console.log(`                  because letter "t" has broken the matching letters "streak".\n`);
-    
-    console.log(`\x1b[31mRemember that you need Internet connection to play.\x1b[0m`);
+
     process.stdout.write(`You've got ${tries_left} tries. Press \x1b[34mEnter\x1b[0m to start playing.`);
     input.question('', () => {
         mutableStdout.muted = false;
-        check_internet_connection();
+        get_word();
     });
 }
 
@@ -116,66 +93,37 @@ function start_game() {
 // prepare console window
 console.clear();
 mutableStdout.muted = true;
-check_console_size();
+check_essentials();
 
 // prepare gameplay
 center_welcome_text();
 start_game();
 
 async function get_word() {
-    console.log('\x1b[34mFetching word…\x1b[0m');
-    try {
-        await fetch('https://random-word-api.vercel.app/api?words=1').then(response => response.text()).then(word => {
-            fetched_word = word.substring(2, word.length - 2);
-            console.log('\x1b[32mFetching word completed…\x1b[0m\n');
-            console.log('\x1b[34mThe game is starting…\x1b[0m');
-            setTimeout(() => {
-                console.clear();
-                console.log('\x1b[95mDictionarily\x1b[0m\n');
-                // start awaiting user input
-                ask_for_word();
-            }, 1000);
-        });
-    } catch (error) {
-        console.log(`\x1b[31mAn error occured while fetching the word.\x1b[0m`);
-        console.log('This is most likely a server issue. Please try to play again later.');
-        process.exit(0);
-    }
+    fetched_word = word_database[Math.floor(Math.random() * word_database.length)].toLowerCase();
+
+    console.log('\n\x1b[34mThe game is starting…\x1b[0m');
+    setTimeout(() => {
+        console.clear();
+        console.log('\x1b[95mDictionarily\x1b[0m\n');
+        // start awaiting user input
+        ask_for_word();
+    }, 1000);
 }
 
 async function ask_for_word() {
     input.question(`You've got ${tries_left} tries left. Type in your guess: `, answer => {
-        if (answer != "") {
-            check_for_existence(answer);
-        } else {
-            console.log('\x1b[31mWord not found. Please try again.\x1b[0m\n');
-            ask_for_word();
-        }
+        check_for_existence(answer);
     });
 }
 
 async function check_for_existence(word) {
-    if (word == fetched_word) {
+    if (word_database.includes(word)) {
         compare(word);
     } else {
-        try {
-            await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`)
-                .then(response => response.json())
-                .then(data => {
-                if (data.title == "No Definitions Found") {
-                    console.log('\x1b[31mWord not found. Please try again.\x1b[0m\n');
-                    ask_for_word();
-                } else {
-                    compare(word);
-                }   
-            });
-        } catch (error) {
-            console.log(`\x1b[31mAn error occured while verifying the word.\x1b[0m`);
-            console.log('This is most likely a server issue. Please check your Internet connection and try again.\n');
-            ask_for_word();
-        }
+        console.log('\x1b[31mWord not found. Please try again.\x1b[0m\n');
+        ask_for_word();
     }
-    
 }
 
 async function compare(word) {
