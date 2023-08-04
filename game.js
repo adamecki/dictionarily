@@ -88,7 +88,7 @@ function start_game() {
     console.log(`${spaces_1}\x1b[95mDictionarily - How to play\x1b[0m`);
     console.log(`${spaces_2}Type in the word to guess it. Hints will help you out.\n`);
 
-    console.log(`Example:        The word is "maintenance"`);
+    console.log(`Example:          The word is "maintenance"`);
     console.log(`---`);
     console.log(`bear↓           - none of the letters are matching,`);
     console.log(`\x1b[32mma\x1b[0mp↑            - some of the letters are matching,`);
@@ -99,13 +99,13 @@ function start_game() {
 
     console.log(`\nNote that \x1b[31monly the first\x1b[0m matching letters are \x1b[32mgreen\x1b[0m`);
 
-    console.log(`\nExample:        The word is "marching"`);
+    console.log(`\nExample:          The word is "marching"`);
     console.log(`---`);
     console.log(`\x1b[32mma\x1b[0mtching↑       - only two first letters are green,`);
-    console.log(`                because letter "t" has broken the matching letters "streak".\n`);
+    console.log(`                  because letter "t" has broken the matching letters "streak".\n`);
     
     console.log(`\x1b[31mRemember that you need Internet connection to play.\x1b[0m`);
-    process.stdout.write(`You've got ${tries_left} tries. Press \x1b[95mEnter\x1b[0m to start playing.`);
+    process.stdout.write(`You've got ${tries_left} tries. Press \x1b[34mEnter\x1b[0m to start playing.`);
     input.question('', () => {
         mutableStdout.muted = false;
         check_internet_connection();
@@ -128,13 +128,13 @@ async function get_word() {
         await fetch('https://random-word-api.vercel.app/api?words=1').then(response => response.text()).then(word => {
             fetched_word = word.substring(2, word.length - 2);
             console.log('\x1b[32mFetching word completed…\x1b[0m\n');
-            console.log('The game starts in 3 seconds…');
+            console.log('\x1b[34mThe game is starting…\x1b[0m');
             setTimeout(() => {
                 console.clear();
                 console.log('\x1b[95mDictionarily\x1b[0m\n');
                 // start awaiting user input
                 ask_for_word();
-            }, 3000);
+            }, 1000);
         });
     } catch (error) {
         console.log(`\x1b[31mAn error occured while fetching the word.\x1b[0m`);
@@ -268,8 +268,7 @@ function game_won() {
     console.log(`It took you ${15 - tries_left} tries.`);
     
     console.log('\nTo play again, restart the app.');
-    console.log('Hope it was fun!');
-    console.log(`Game by \x1b[34mAdamecki\x1b[0m <3`);
+    console.log(`Game by \x1b[34mAdamecki\x1b[0m`);
     process.exit(0);
 }
 
@@ -278,7 +277,6 @@ function game_lost() {
     console.log(`The word was \x1b[31m${fetched_word}\x1b[0m.`);
     
     console.log('\nTo play again, restart the app.');
-    console.log('Anyways, I hope it was fun!');
-    console.log(`Game by \x1b[34mAdamecki\x1b[0m <3`);
+    console.log(`Game by \x1b[34mAdamecki\x1b[0m`);
     process.exit(0);
 }

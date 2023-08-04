@@ -5,6 +5,7 @@ A simple word game made in Node.JS. Inspired by Słownikowo: https://literalnie.
 When you start the game, it fetches a random word from a dictionary API and tells you to guess it.
 Each guess is verified if it's in the dictionary so you guess by typing real words and not random letters.
 After that, game gives you hints about what you should type next (look below).
+- The regular version of Dictionarily uses the Internet. In the directory `game-offline` you can find an offline variant which uses a downloaded version of heroku word database.
 
 ![Screenshot](screenshot.png "Screenshot")
 
@@ -14,7 +15,7 @@ English is the only language supported so far, but I plan on adding Polish and G
 # Requirements
 - Terminal window sized 88x22 or more (columns x rows) or command line OS
 - Node.JS v18.13.0 or newer (may work on older versions, but not guaranteed)
-- Internet connection
+- Internet connection (only the online game variant)
 - Wide vocabulary knowledge ;)
 
 *app not tested on Windows and macOS*
@@ -25,7 +26,7 @@ Make sure to meet all the system requirements. Then open your OS's terminal wind
 - macOS: `node game.js`
 - Windows: `node game.js`
 
-# APIs used to fetch & verify words
+# APIs used to fetch & verify words (only the online version)
 - https://random-word-api.vercel.app/api?words=1 - word fetching API
 - https://api.dictionaryapi.dev/api/v2/entries/en/word - word verifying API
 
