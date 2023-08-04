@@ -1,5 +1,5 @@
 # Dictionarily
-A simple word game made in Node.JS by Adamecki.
+A simple word game made in Node.JS. Inspired by Słownikowo: https://literalnie.fun/slownikowo.
 
 # How does it work?
 When you start the game, it fetches a random word from a dictionary API and tells you to guess it.
@@ -19,10 +19,16 @@ English is the only language supported so far, but I plan on adding Polish and G
 
 *app not tested on Windows and macOS*
 
+# How to run?
+Make sure to meet all the system requirements. Then open your OS's terminal window and run the game:
+- Linux: `node game.js` or `./linux-game`
+- macOS: `node game.js`
+- Windows: `node game.js`
+
 # APIs used to fetch & verify words
-https://random-word-api.vercel.app/api?words=1 - word fetching API
-https://api.dictionaryapi.dev/api/v2/entries/en/<word> - word verifying API
+- https://random-word-api.vercel.app/api?words=1 - word fetching API
+- https://api.dictionaryapi.dev/api/v2/entries/en/word - word verifying API
 
 # Cheats
-More guesses - edit line 21 and 257 and put in as many chances as you want.
-Disable word verifying - comment out function `check-for-existence` and directly move on to `compare`. May be useful if you encounter any problems with word verification API (e.g. fetching API fetched a word that isn't in the verifying API). I'm still working on finding one server to fetch & verify words.
+- More guesses - edit line 21 and 268 and put in as many chances as you want.
+- Disable word verifying - comment out function `check-for-existence` and directly move on to `compare`. May be useful if you encounter any problems with word verification API.

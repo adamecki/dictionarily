@@ -101,7 +101,7 @@ function start_game() {
 
     console.log(`\nExample:        The word is "marching"`);
     console.log(`---`);
-    console.log(`\x1b[32mma\x1b[0mtching        - only two first letters are green,`);
+    console.log(`\x1b[32mma\x1b[0mtching↑       - only two first letters are green,`);
     console.log(`                because letter "t" has broken the matching letters "streak".\n`);
     
     console.log(`\x1b[31mRemember that you need Internet connection to play.\x1b[0m`);
@@ -155,16 +155,27 @@ async function ask_for_word() {
 }
 
 async function check_for_existence(word) {
-    await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`)
-    .then(response => response.json())
-    .then(data => {
-        if (data.title == "No Definitions Found") {
-            console.log('\x1b[31mWord not found. Please try again.\x1b[0m\n');
+    if (word == fetched_word) {
+        compare(word);
+    } else {
+        try {
+            await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`)
+                .then(response => response.json())
+                .then(data => {
+                if (data.title == "No Definitions Found") {
+                    console.log('\x1b[31mWord not found. Please try again.\x1b[0m\n');
+                    ask_for_word();
+                } else {
+                    compare(word);
+                }   
+            });
+        } catch (error) {
+            console.log(`\x1b[31mAn error occured while verifying the word.\x1b[0m`);
+            console.log('This is most likely a server issue. Please check your Internet connection and try again.\n');
             ask_for_word();
-        } else {
-            compare(word);
         }
-    });
+    }
+    
 }
 
 async function compare(word) {
